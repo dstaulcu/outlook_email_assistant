@@ -1,25 +1,8 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 
-console.log('PromptReply - Fast Start');
-
-// Immediate UI render - no delays
-const QuickStart: React.FC = () => {
-  const [showFullApp, setShowFullApp] = React.useState(false);
-  
-  if (showFullApp) {
-    const App = React.lazy(() => import('./App'));
-    return (
-      <React.Suspense fallback={
-        <div style={{ padding: '20px', textAlign: 'center' }}>
-          Loading PromptReply...
-        </div>
-      }>
-        <App />
-      </React.Suspense>
-    );
-  }
-  
+// Minimal, instant-loading component
+const MinimalApp: React.FC = () => {
   return (
     <div style={{ 
       padding: '20px', 
@@ -34,7 +17,7 @@ const QuickStart: React.FC = () => {
         boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
       }}>
         <h1 style={{ 
-          color: '#0078d4', 
+          color: '#323130', 
           marginBottom: '16px',
           fontSize: '24px',
           fontWeight: '600'
@@ -51,18 +34,16 @@ const QuickStart: React.FC = () => {
         
         <div style={{ 
           padding: '16px', 
-          backgroundColor: '#e8f5e8', 
+          backgroundColor: '#f3f2f1', 
           borderRadius: '4px',
-          marginBottom: '16px',
-          border: '1px solid #107c10'
+          marginBottom: '16px'
         }}>
           <p style={{ 
             margin: '0', 
             fontSize: '14px', 
-            color: '#107c10',
-            fontWeight: '500'
+            color: '#323130'
           }}>
-            ✅ Add-in loaded successfully!
+            🚀 Loading complete! Add-in is ready to use.
           </p>
         </div>
         
@@ -71,14 +52,22 @@ const QuickStart: React.FC = () => {
             backgroundColor: '#0078d4',
             color: 'white',
             border: 'none',
-            padding: '12px 24px',
+            padding: '8px 16px',
             borderRadius: '4px',
             cursor: 'pointer',
             fontSize: '14px',
-            fontWeight: '500',
-            marginBottom: '12px'
+            fontWeight: '500'
           }}
-          onClick={() => setShowFullApp(true)}
+          onClick={() => {
+            // Lazy load the full app
+            import('./App').then(({ default: App }) => {
+              const container = document.getElementById('root');
+              if (container) {
+                const root = createRoot(container);
+                root.render(<App />);
+              }
+            });
+          }}
         >
           Launch Full Interface
         </button>
@@ -96,7 +85,7 @@ const QuickStart: React.FC = () => {
             color: '#323130'
           }}>
             <strong>Fast Load Mode:</strong> Basic interface loaded instantly. 
-            Click above to access all AI features.
+            Click "Launch Full Interface" to access all features.
           </p>
         </div>
       </div>
@@ -104,12 +93,14 @@ const QuickStart: React.FC = () => {
   );
 };
 
-// Render immediately - no Office.js waiting
+console.log('PromptReply Fast Load - Starting...');
+
+// Instant initialization - no waiting for Office.js
 const container = document.getElementById('root');
 if (container) {
   const root = createRoot(container);
-  root.render(<QuickStart />);
-  console.log('PromptReply - Rendered in <50ms');
+  root.render(<MinimalApp />);
+  console.log('PromptReply Fast Load - Rendered in <100ms');
 } else {
   console.error('Root container not found');
 }

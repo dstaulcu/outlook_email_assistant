@@ -1,12 +1,13 @@
 // Environment-specific configuration for deployment
 module.exports = {
-  // Home development environment
+  // Home development environment - Direct S3 for faster iteration
   home: {
     s3Bucket: '293354421824-outlook-email-assistant',
-    region: 'us-east-1', // Default region, update as needed
-    cloudFrontDistributionId: '', // Will be populated after CloudFront setup
-    baseUrl: '', // Will be populated after CloudFront setup
-    environment: 'home'
+    region: 'us-east-1',
+    // Using direct S3 URL instead of CloudFront for faster testing
+    baseUrl: 'https://293354421824-outlook-email-assistant.s3.amazonaws.com',
+    environment: 'home',
+    useCloudFront: false // Skip CloudFront for now
   },
   
   // Work environment (to be configured when ready)

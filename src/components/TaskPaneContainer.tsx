@@ -408,7 +408,7 @@ ${refinementInput.trim() ? `🎯 Applied Custom Instructions: ${refinementInput}
           }} 
           ref={containerRef}
           role="main"
-          aria-label="Outlook Email AI Assistant"
+          aria-label="PromptReply"
         >
           {/* Header */}
           <div style={{ 
@@ -421,7 +421,7 @@ ${refinementInput.trim() ? `🎯 Applied Custom Instructions: ${refinementInput}
           }}>
             <span style={{ fontSize: '18px' }}>🤖</span>
             <Text size={500} weight="semibold" style={{ color: '#0078d4' }}>
-              Outlook Email AI Assistant
+              PromptReply
             </Text>
           </div>
           
@@ -438,7 +438,7 @@ ${refinementInput.trim() ? `🎯 Applied Custom Instructions: ${refinementInput}
               <CardPreview>
                 <div style={{ padding: '16px' }}>
                   <Text weight="semibold" size={400} style={{ color: '#0078d4', marginBottom: '8px', display: 'block' }}>
-                    Welcome to Outlook Email AI Assistant! 🎉
+                    Welcome to PromptReply! 🎉
                   </Text>
                   <Text size={300} style={{ marginBottom: '12px', display: 'block' }}>
                     Get started by configuring your AI provider. For the best first experience, we recommend using Ollama (local AI) which is already set as your default.
@@ -748,7 +748,7 @@ ${refinementInput.trim() ? `🎯 Applied Custom Instructions: ${refinementInput}
       {/* Footer */}
       <div style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid #e5e5e5' }}>
         <Text size={200} style={{ color: '#666', textAlign: 'center', display: 'block' }}>
-          Outlook Email AI Assistant v1.0.0
+          PromptReply v1.0.0
         </Text>
       </div>
       </div>

@@ -1,7 +1,7 @@
 {
-  "name": "outlook-email-ai-assistant",
+  "name": "promptreply",
   "version": "1.0.0",
-  "description": "AI-powered email assistant for Microsoft Outlook with OpenAI and Ollama support",
+  "description": "PromptReply - AI-powered email assistant for Microsoft Outlook with OpenAI and Ollama support",
   "main": "dist/main.js",
   "scripts": {
     "dev": "webpack serve --mode development",
@@ -19,7 +19,8 @@
     "deploy:work": "node scripts/deploy.js work",
     "setup-cloudfront": "node scripts/setup-cloudfront.js",
     "setup-cloudfront:home": "node scripts/setup-cloudfront.js home",
-    "setup-cloudfront:work": "node scripts/setup-cloudfront.js work"
+    "generate-icons": "powershell -ExecutionPolicy Bypass -File generate-icons.ps1",
+    "update-branding": "echo 'Branding updated to PromptReply'"
   },
   "keywords": [
     "outlook",

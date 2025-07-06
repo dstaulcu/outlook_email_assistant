@@ -126,8 +126,9 @@ function getCacheControl(filePath) {
 }
 
 async function invalidateCloudFront() {
-  if (!config.cloudFrontDistributionId) {
-    console.log('⚠️  No CloudFront distribution configured, skipping invalidation');
+  // Skip CloudFront if not configured or not using CloudFront
+  if (!config.cloudFrontDistributionId || config.useCloudFront === false) {
+    console.log('⚠️  CloudFront not configured or disabled, skipping invalidation');
     return;
   }
   

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Office.js Test</title>
+</head>
+<body>
+    <h1>Quick Office.js Test</h1>
+    <div id="results"></div>
+    <script>
+        function logResult(message) {
+            document.getElementById('results').innerHTML += '<div>' + message + '</div>';
+            console.log(message);
+        }
+        
+        logResult('Testing Office.js CDN access...');
+        
+        // Test 1: Can we load Office.js from CDN?
+        const script = document.createElement('script');
+        script.src = 'https://appsforoffice.microsoft.com/lib/1/hosted/office.js';
+        script.onload = function() {
+            logResult('✅ Office.js CDN loaded successfully!');
+            setTimeout(() => {
+                if (typeof Office !== 'undefined') {
+                    logResult('✅ Office object is available');
+                    if (Office.onReady) {
+                        logResult('✅ Office.onReady is available');
+                    } else {
+                        logResult('❌ Office.onReady is not available');
+                    }
+                } else {
+                    logResult('❌ Office object is not available');
+                }
+            }, 1000);
+        };
+        script.onerror = function() {
+            logResult('❌ Office.js CDN failed to load');
+        };
+        document.head.appendChild(script);
+        
+        logResult('Test script loaded, waiting for Office.js...');
+    </script>
+</body>
+</html>

@@ -91,9 +91,25 @@ module.exports = (env, argv) => {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendors',
             chunks: 'all'
+          },
+          // Split large libraries into separate chunks
+          fluentui: {
+            test: /[\\/]node_modules[\\/]@fluentui[\\/]/,
+            name: 'fluentui',
+            chunks: 'all',
+            priority: 10
+          },
+          react: {
+            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+            name: 'react',
+            chunks: 'all',
+            priority: 10
           }
         }
-      }
+      },
+      // Enable tree shaking and minification
+      usedExports: true,
+      sideEffects: false
     },
     devtool: isProduction ? 'source-map' : 'eval-source-map'
   };

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PromptReply AI Features Demo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #323130;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0078d4;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .demo-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #0078d4;
+        }
+        button {
+            background: #0078d4;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 8px 8px 8px 0;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: #106ebe;
+            transform: translateY(-1px);
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .output {
+            background: white;
+            border: 1px solid #e1dfdd;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            min-height: 40px;
+        }
+        .output.loading {
+            background: #f0f8ff;
+            border-color: #0078d4;
+            color: #0078d4;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 12px;
+            border: 1px solid #e1dfdd;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            margin-top: 8px;
+        }
+        .status {
+            background: #e8f4f8;
+            border: 1px solid #0078d4;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 PromptReply AI Features Demo</h1>
+        
+        <div class="status" id="mainStatus">
+            Ready to test AI features - No Office.js required for this demo
+        </div>
+
+        <div class="demo-section">
+            <h2>📧 Email Analysis</h2>
+            <p>Test the AI's ability to analyze email content and provide insights:</p>
+            
+            <textarea id="emailContent" placeholder="Enter email content to analyze...">Subject: Project Update Meeting
+
+Hi team,
+
+I wanted to schedule a meeting to discuss the project status. We need to review the deliverables and make sure we're on track for the deadline. 
+
+Please let me know your availability for next week.
+
+Thanks,
+John</textarea>
+            
+            <br>
+            <button onclick="demoAnalyzeEmail()">📊 Analyze Email</button>
+            <button onclick="clearOutput('emailOutput')">🗑️ Clear</button>
+            
+            <div id="emailOutput" class="output"></div>
+        </div>
+
+        <div class="demo-section">
+            <h2>💬 Reply Generation</h2>
+            <p>Generate different types of replies automatically:</p>
+            
+            <div class="feature-grid">
+                <button onclick="demoGenerateReply('professional')">🎯 Professional</button>
+                <button onclick="demoGenerateReply('friendly')">😊 Friendly</button>
+                <button onclick="demoGenerateReply('brief')">⚡ Brief</button>
+            </div>
+            
+            <div id="replyOutput" class="output"></div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🤖 Custom AI Prompts</h2>
+            <p>Test custom prompts and AI responses:</p>
+            
+            <textarea id="customPrompt" placeholder="Enter your custom prompt...">help</textarea>
+            
+            <br>
+            <button onclick="demoCustomPrompt()">🚀 Process Prompt</button>
+            <button onclick="setPrompt('help')">💡 Help</button>
+            <button onclick="setPrompt('improve')">📈 Improve</button>
+            <button onclick="setPrompt('professional')">📝 Professional</button>
+            <button onclick="clearOutput('customOutput')">🗑️ Clear</button>
+            
+            <div id="customOutput" class="output"></div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🔧 Integration Test</h2>
+            <p>Test clipboard and Office.js integration:</p>
+            
+            <button onclick="testClipboard()">📋 Test Clipboard</button>
+            <button onclick="testOfficeJs()">🏢 Test Office.js</button>
+            
+            <div id="integrationOutput" class="output"></div>
+        </div>
+    </div>
+
+    <script>
+        // Demo functions
+        function demoAnalyzeEmail() {
+            const content = document.getElementById('emailContent').value.trim();
+            if (!content) {
+                showOutput('emailOutput', 'Please enter email content to analyze.', 'error');
+                return;
+            }
+            
+            showOutput('emailOutput', 'Analyzing email...', 'loading');
+            
+            setTimeout(() => {
+                const analysis = generateEmailAnalysis(content);
+                showOutput('emailOutput', analysis, 'success');
+            }, 1000);
+        }
+        
+        function demoGenerateReply(tone) {
+            showOutput('replyOutput', 'Generating ' + tone + ' reply...', 'loading');
+            
+            setTimeout(() => {
+                const replies = {
+                    professional: 'Thank you for your email. I have reviewed your message and will provide a response shortly.\n\nI appreciate your patience and look forward to our continued correspondence.\n\nBest regards',
+                    friendly: 'Hi there!\n\nThanks for reaching out! I got your message and I will get back to you soon.\n\nHope you are having a great day!\n\nCheers',
+                    brief: 'Thanks for your email. Will respond shortly.\n\nBest'
+                };
+                
+                const reply = replies[tone] || replies.professional;
+                showOutput('replyOutput', reply, 'success');
+            }, 1500);
+        }
+        
+        function demoCustomPrompt() {
+            const prompt = document.getElementById('customPrompt').value.trim();
+            if (!prompt) {
+                showOutput('customOutput', 'Please enter a prompt first.', 'error');
+                return;
+            }
+            
+            showOutput('customOutput', 'Processing prompt...', 'loading');
+            
+            setTimeout(() => {
+                const response = generateCustomResponse(prompt);
+                showOutput('customOutput', response, 'success');
+            }, 2000);
+        }
+        
+        function setPrompt(text) {
+            document.getElementById('customPrompt').value = text;
+        }
+        
+        function testClipboard() {
+            const testText = 'This is a test clipboard content from PromptReply AI Assistant.';
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(testText).then(() => {
+                    showOutput('integrationOutput', '✅ Clipboard test successful!\n\nTest text copied to clipboard:\n"' + testText + '"', 'success');
+                }).catch(err => {
+                    showOutput('integrationOutput', '❌ Clipboard test failed:\n' + err.message, 'error');
+                });
+            } else {
+                showOutput('integrationOutput', '❌ Clipboard API not available in this browser/environment', 'error');
+            }
+        }
+        
+        function testOfficeJs() {
+            showOutput('integrationOutput', 'Testing Office.js integration...', 'loading');
+            
+            // Check if Office.js is already loaded
+            if (typeof Office !== 'undefined') {
+                showOutput('integrationOutput', '✅ Office.js already loaded!\n\nEnvironment: ' + (Office.context ? 'Office Application' : 'Standalone'), 'success');
+                return;
+            }
+            
+            // Try to load Office.js
+            const script = document.createElement('script');
+            script.src = 'https://appsforoffice.microsoft.com/lib/1/hosted/office.js';
+            script.onload = function() {
+                if (typeof Office !== 'undefined') {
+                    const context = Office.context ? 'Office Application' : 'Standalone';
+                    showOutput('integrationOutput', '✅ Office.js loaded successfully!\n\nEnvironment: ' + context + '\nHost: ' + (Office.context?.host || 'Unknown'), 'success');
+                } else {
+                    showOutput('integrationOutput', '❌ Office.js loaded but Office object not available', 'error');
+                }
+            };
+            script.onerror = function() {
+                showOutput('integrationOutput', '❌ Office.js failed to load\n\nThis is normal when testing outside of Office applications.', 'error');
+            };
+            document.head.appendChild(script);
+        }
+        
+        function showOutput(elementId, content, type = 'default') {
+            const output = document.getElementById(elementId);
+            output.textContent = content;
+            output.className = 'output';
+            
+            if (type === 'loading') {
+                output.className += ' loading';
+            } else if (type === 'success') {
+                output.className += ' success';
+            } else if (type === 'error') {
+                output.className += ' error';
+            }
+        }
+        
+        function clearOutput(elementId) {
+            const output = document.getElementById(elementId);
+            output.textContent = '';
+            output.className = 'output';
+        }
+        
+        // AI Logic functions
+        function generateEmailAnalysis(content) {
+            const wordCount = content.split(/\s+/).length;
+            const hasSubject = content.includes('Subject:');
+            const hasQuestions = content.includes('?');
+            const hasGreeting = /\b(hi|hello|dear|hey)\b/i.test(content);
+            const hasClosing = /\b(thanks|regards|best|sincerely)\b/i.test(content);
+            const tone = content.toLowerCase().includes('please') || content.toLowerCase().includes('thank') ? 'polite' : 'neutral';
+            
+            let score = 70;
+            if (hasSubject) score += 10;
+            if (hasGreeting) score += 5;
+            if (hasClosing) score += 5;
+            if (wordCount > 20 && wordCount < 200) score += 10;
+            
+            return '📊 EMAIL ANALYSIS RESULTS\n\n' +
+                   '📈 Structure Analysis:\n' +
+                   '• Word count: ' + wordCount + ' words\n' +
+                   '• Length: ' + (wordCount < 50 ? 'Concise' : wordCount < 150 ? 'Appropriate' : 'Lengthy') + '\n' +
+                   '• Has subject line: ' + (hasSubject ? 'Yes ✅' : 'No ❌') + '\n' +
+                   '• Has greeting: ' + (hasGreeting ? 'Yes ✅' : 'No ❌') + '\n' +
+                   '• Has closing: ' + (hasClosing ? 'Yes ✅' : 'No ❌') + '\n' +
+                   '• Tone: ' + tone.charAt(0).toUpperCase() + tone.slice(1) + '\n\n' +
+                   '✅ Strengths:\n' +
+                   '• Clear communication intent\n' +
+                   '• Appropriate for email format\n' +
+                   (hasQuestions ? '• Contains questions for engagement\n' : '') +
+                   (hasGreeting ? '• Professional greeting included\n' : '') +
+                   (hasClosing ? '• Proper closing statement\n' : '') + '\n' +
+                   '💡 Suggestions:\n' +
+                   (!hasSubject ? '• Add clear subject line\n' : '') +
+                   (!hasGreeting ? '• Consider adding greeting\n' : '') +
+                   (!hasClosing ? '• Add professional closing\n' : '') +
+                   (wordCount > 200 ? '• Consider shortening for better readability\n' : '') +
+                   '• Review for typos before sending\n' +
+                   '• Include clear call-to-action if needed\n\n' +
+                   '📈 Overall Score: ' + Math.min(score, 100) + '/100';
+        }
+        
+        function generateCustomResponse(prompt) {
+            const responses = {
+                'help': 'I am here to help! Here are some ways I can assist with your emails:\n\n• 📧 Analyze email content and tone\n• 💬 Generate professional replies\n• 📝 Suggest improvements\n• 🤖 Create custom responses\n• 📊 Provide writing insights\n\nWhat would you like me to help you with?',
+                'improve': 'Here are some suggestions to improve your email:\n\n✅ Structure:\n• Use clear, concise language\n• Structure with bullet points or paragraphs\n• Include a clear subject line\n• Start with appropriate greeting\n• End with specific next steps\n\n✅ Tone:\n• Match tone to audience\n• Be professional but not overly formal\n• Use active voice when possible\n• Proofread for clarity and errors\n\n✅ Content:\n• Be specific about requests\n• Include relevant context\n• Provide clear deadlines\n• Make action items obvious',
+                'professional': 'Here is a professional email template:\n\n📧 PROFESSIONAL EMAIL TEMPLATE\n\nSubject: [Clear, specific subject]\n\nDear [Name],\n\nI hope this email finds you well. I am writing to [purpose].\n\n[Main content with clear points]\n\nSpecifically, I would like to:\n• [Action item 1]\n• [Action item 2]\n• [Action item 3]\n\nI would appreciate [specific request/next steps] by [date].\n\nThank you for your time and consideration.\n\nBest regards,\n[Your name]\n[Your title]\n[Contact information]'
+            };
+            
+            // Simple keyword matching
+            const lowerPrompt = prompt.toLowerCase();
+            for (const keyword in responses) {
+                if (lowerPrompt.includes(keyword)) {
+                    return responses[keyword];
+                }
+            }
+            
+            // Generic response based on prompt analysis
+            let response = 'Based on your prompt: "' + prompt + '"\n\n';
+            
+            if (lowerPrompt.includes('write') || lowerPrompt.includes('compose')) {
+                response += '📝 Writing Assistance:\n• Be clear about your purpose\n• Use appropriate tone for audience\n• Include specific details\n• Structure with clear sections\n• End with clear next steps';
+            } else if (lowerPrompt.includes('reply') || lowerPrompt.includes('respond')) {
+                response += '💬 Reply Guidance:\n• Acknowledge their message\n• Address all their points\n• Be timely with response\n• Match their tone appropriately\n• Include clear next actions';
+            } else if (lowerPrompt.includes('format') || lowerPrompt.includes('structure')) {
+                response += '📊 Format Suggestions:\n• Use clear subject line\n• Start with greeting\n• Organize with bullet points\n• End with professional closing\n• Include signature block';
+            } else {
+                response += '🤖 General Suggestions:\n• Be specific about your goals\n• Consider your audience\n• Use clear, actionable language\n• Maintain appropriate tone\n• Include relevant details\n\nWould you like me to help with a more specific aspect of your email?';
+            }
+            
+            return response;
+        }
+        
+        console.log('PromptReply AI Features Demo loaded successfully!');
+    </script>
+</body>
+</html>
