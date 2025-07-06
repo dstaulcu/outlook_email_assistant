@@ -1,0 +1,194 @@
+/**
+ * Accessibility styles for Outlook Email AI Assistant
+ * Focus indicators and high contrast mode support
+ */
+
+/* Focus indicators that meet WCAG standards */
+button:focus,
+input:focus,
+textarea:focus,
+select:focus,
+a:focus,
+[tabindex]:focus {
+  outline: 2px solid #0078d4 !important;
+  outline-offset: 2px !important;
+  border-radius: 4px;
+}
+
+/* High contrast mode focus indicators */
+@media (prefers-contrast: high) {
+  button:focus,
+  input:focus,
+  textarea:focus,
+  select:focus,
+  a:focus,
+  [tabindex]:focus {
+    outline: 2px solid ButtonText !important;
+    outline-offset: 2px !important;
+  }
+}
+
+/* Skip links */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: #0078d4;
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  z-index: 1000;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: top 0.2s;
+}
+
+.skip-link:focus {
+  top: 6px !important;
+}
+
+/* High contrast mode skip links */
+@media (prefers-contrast: high) {
+  .skip-link {
+    outline: 2px solid ButtonText;
+    background: ButtonFace;
+    color: ButtonText;
+  }
+}
+
+/* Ensure touch targets are at least 44px */
+button,
+input,
+textarea,
+select,
+a {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Exception for small text buttons */
+button.small {
+  min-height: 32px;
+  min-width: 32px;
+}
+
+/* Visual focus indicators for non-interactive elements that receive focus */
+[tabindex="0"]:focus,
+[role="button"]:focus,
+[role="tab"]:focus,
+[role="menuitem"]:focus {
+  outline: 2px solid #0078d4;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Ensure proper color contrast for text */
+.text-primary {
+  color: #323130;
+}
+
+.text-secondary {
+  color: #605e5c;
+}
+
+.text-tertiary {
+  color: #8a8886;
+}
+
+.text-error {
+  color: #d13438;
+}
+
+.text-success {
+  color: #107c10;
+}
+
+.text-warning {
+  color: #ff8c00;
+}
+
+/* High contrast mode text colors */
+@media (prefers-contrast: high) {
+  .text-primary {
+    color: ButtonText;
+  }
+  
+  .text-secondary {
+    color: ButtonText;
+  }
+  
+  .text-tertiary {
+    color: GrayText;
+  }
+  
+  .text-error {
+    color: #ff0000;
+  }
+  
+  .text-success {
+    color: #00ff00;
+  }
+  
+  .text-warning {
+    color: #ffff00;
+  }
+}
+
+/* Ensure proper focus management for cards */
+.card:focus-within {
+  outline: 2px solid #0078d4;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Loading states should be announced */
+.loading-indicator {
+  position: relative;
+}
+
+.loading-indicator::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #0078d4;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .loading-indicator::after {
+    animation: none;
+  }
+  
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
