@@ -15,8 +15,6 @@
     "lint": "eslint src --ext .ts,.tsx",
     "test": "jest",
     "deploy": "npm run build && node scripts/deploy.js",
-    "deploy:home": "node scripts/deploy.js home",
-    "deploy:work": "node scripts/deploy.js work",
     "download-manifest": "powershell -ExecutionPolicy Bypass -File download-manifest.ps1",
     "update-manifest": "powershell -ExecutionPolicy Bypass -File update-manifest.ps1",
     "create-icons": "powershell -ExecutionPolicy Bypass -File create-simple-icons.ps1",

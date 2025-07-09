@@ -1,7 +1,7 @@
-# PowerShell script to sideload the Outlook Email AI Assistant add-in
+# PowerShell script to sideload the PromptReply add-in for development
 
-Write-Host "Outlook Email AI Assistant - Sideloading Script" -ForegroundColor Green
-Write-Host "=================================================" -ForegroundColor Green
+Write-Host "PromptReply - Development Sideloading Script" -ForegroundColor Green
+Write-Host "=============================================" -ForegroundColor Green
 
 # Check if development server is running
 $url = "https://localhost:3001"

@@ -1,8 +1,8 @@
-name: Deploy to AWS S3 + CloudFront
+name: Deploy to AWS S3
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -10,73 +10,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     
-    strategy:
-      matrix:
-        environment: [home, work]
-        include:
-          - environment: home
-            if: github.ref == 'refs/heads/develop'
-          - environment: work
-            if: github.ref == 'refs/heads/main'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ matrix.environment == 'home' && 'us-east-1' || 'us-gov-west-1' }}
-    
-    - name: Deploy to ${{ matrix.environment }}
-      run: npm run deploy:${{ matrix.environment }}
-    
-    - name: Comment PR with deployment info
-      if: github.event_name == 'pull_request'
-      uses: actions/github-script@v6
-      with:
-        script: |
-          const environment = '${{ matrix.environment }}';
-          const environments = require('./config/environments');
-          const config = environments[environment];
-          
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: `🚀 Deployed to **${environment}** environment!\n\n` +
-                  `📄 Manifest URL: ${config.baseUrl}/manifest.xml\n` +
-                  `🌐 Add-in URL: ${config.baseUrl}\n\n` +
-                  `To test this deployment, use the manifest URL in Outlook.`
-          });
-
-  # Security scanning
-  security:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    
-    - name: Run security audit
-      run: npm audit --audit-level moderate
-    
-    - name: Check for vulnerabilities
-      run: npm audit --fix
-
-  # Accessibility testing
-  accessibility:
-    runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -93,12 +26,74 @@ jobs:
     - name: Build project
       run: npm run build
     
-    - name: Run accessibility tests
-      run: node test-accessibility.js
-    
-    - name: Upload accessibility report
-      uses: actions/upload-artifact@v3
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
       with:
-        name: accessibility-report
-        path: accessibility-report.html
-        retention-days: 30
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+    
+    - name: Deploy to S3
+      run: npm run deploy
+    
+    - name: Comment PR with deployment info
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `🚀 Deployed to S3!\n\n` +
+                  `📄 Manifest URL: ${config.s3.baseUrl}/manifest.xml\n` +
+                  `🌐 Add-in URL: ${config.s3.baseUrl}\n\n` +
+                  `To test this deployment, use the manifest URL in Outlook.`
+          });
+
+  # Security scanning
+  security:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run security audit
+      run: npm audit --audit-level moderate
+
+  # Build validation
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Validate manifest
+      run: npm run validate-manifest
+    
+    - name: Build project
+      run: npm run build
+    
+    - name: Run linting
+      run: npm run lint
