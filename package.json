@@ -17,9 +17,9 @@
     "deploy": "npm run build && node scripts/deploy.js",
     "deploy:home": "node scripts/deploy.js home",
     "deploy:work": "node scripts/deploy.js work",
-    "setup-cloudfront": "node scripts/setup-cloudfront.js",
-    "setup-cloudfront:home": "node scripts/setup-cloudfront.js home",
-    "generate-icons": "powershell -ExecutionPolicy Bypass -File generate-icons.ps1",
+    "download-manifest": "powershell -ExecutionPolicy Bypass -File download-manifest.ps1",
+    "update-manifest": "powershell -ExecutionPolicy Bypass -File update-manifest.ps1",
+    "create-icons": "powershell -ExecutionPolicy Bypass -File create-simple-icons.ps1",
     "update-branding": "echo 'Branding updated to PromptReply'"
   },
   "keywords": [

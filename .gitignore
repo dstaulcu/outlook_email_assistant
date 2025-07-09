@@ -20,6 +20,9 @@ build/
 .aws/
 aws-exports.js
 
+# Architecture and Security Documentation (Private - Do Not Commit)
+ARCHITECTURE_DIAGRAMS.md
+
 # IDE and editor files
 .vscode/
 .idea/

@@ -1,0 +1,11 @@
+{
+  "s3": {
+    "bucket": "293354421824-outlook-email-assistant",
+    "region": "us-east-1",
+    "baseUrl": "https://293354421824-outlook-email-assistant.s3.amazonaws.com"
+  },
+  "project": {
+    "name": "PromptReply",
+    "displayName": "PromptReply - AI Email Assistant"
+  }
+}

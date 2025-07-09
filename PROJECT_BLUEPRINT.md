@@ -219,13 +219,13 @@ Create a Microsoft Outlook add-in that provides AI-powered email assistance usin
 - **Offline Support** - Essential features work with cached data
 - **Security Error Handling** - Clear messaging for classification blocking
 
-## S3 Deployment Requirements
+## S3 Direct Hosting Requirements
 - **Static website hosting** - Enable S3 static hosting for add-in files
 - **CORS configuration** - Allow requests from Office 365 domains
 - **Cache headers** - Proper cache control for manifest and assets
 - **Cache busting** - Hash-based filenames for updated deployments
-- **CDN integration** - CloudFront distribution for global performance
-- **Deployment automation** - PowerShell scripts for automated deployment
+- **Direct S3 hosting** - Use S3 static website endpoints for immediate deployment
+- **Deployment automation** - PowerShell scripts for automated S3 deployment
 
 ## Office Add-in Manifest Requirements
 - **Task pane configuration** - Define default dimensions and source location

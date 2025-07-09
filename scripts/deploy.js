@@ -4,24 +4,18 @@ const AWS = require('aws-sdk');
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
-const environments = require('../config/environments');
 
-// Configure AWS SDK
+// Load configuration
+const config = JSON.parse(fs.readFileSync(path.join(__dirname, '../config.json'), 'utf8'));
+
+// Configure AWS SDK - S3 only for direct hosting
 const s3 = new AWS.S3();
-const cloudfront = new AWS.CloudFront();
 
-// Get environment from command line args
+// Get environment from command line args (for potential future multi-environment support)
 const environment = process.argv[2] || 'home';
-const config = environments[environment];
-
-if (!config) {
-  console.error(`❌ Unknown environment: ${environment}`);
-  console.error('Available environments:', Object.keys(environments));
-  process.exit(1);
-}
 
 console.log(`🚀 Deploying to ${environment} environment...`);
-console.log(`📦 S3 Bucket: ${config.s3Bucket}`);
+console.log(`📦 S3 Bucket: ${config.s3.bucket}`);
 
 async function buildProject() {
   console.log('📦 Building project...');
@@ -69,7 +63,7 @@ async function uploadFile(filePath, s3Key) {
   const contentType = getContentType(filePath);
   
   const params = {
-    Bucket: config.s3Bucket,
+    Bucket: config.s3.bucket,
     Key: s3Key,
     Body: fileContent,
     ContentType: contentType,
@@ -126,32 +120,9 @@ function getCacheControl(filePath) {
 }
 
 async function invalidateCloudFront() {
-  // Skip CloudFront if not configured or not using CloudFront
-  if (!config.cloudFrontDistributionId || config.useCloudFront === false) {
-    console.log('⚠️  CloudFront not configured or disabled, skipping invalidation');
-    return;
-  }
-  
-  console.log('🔄 Invalidating CloudFront cache...');
-  
-  const params = {
-    DistributionId: config.cloudFrontDistributionId,
-    InvalidationBatch: {
-      CallerReference: Date.now().toString(),
-      Paths: {
-        Quantity: 1,
-        Items: ['/*']
-      }
-    }
-  };
-  
-  try {
-    const result = await cloudfront.createInvalidation(params).promise();
-    console.log('✅ CloudFront invalidation created:', result.Invalidation.Id);
-  } catch (error) {
-    console.error('❌ CloudFront invalidation failed:', error.message);
-    // Don't fail the deployment for invalidation errors
-  }
+  // Skip CloudFront - using S3 direct hosting only
+  console.log('⚠️  Using S3 direct hosting - no CloudFront invalidation needed');
+  return;
 }
 
 async function deploy() {
@@ -161,8 +132,8 @@ async function deploy() {
     await invalidateCloudFront();
     
     console.log('\n🎉 Deployment completed successfully!');
-    console.log(`🌐 Your add-in is available at: ${config.baseUrl}`);
-    console.log(`📄 Manifest URL: ${config.baseUrl}/manifest.xml`);
+    console.log(`🌐 Your add-in is available at: ${config.s3.baseUrl}`);
+    console.log(`📄 Manifest URL: ${config.s3.baseUrl}/manifest.xml`);
     
   } catch (error) {
     console.error('\n❌ Deployment failed:', error.message);

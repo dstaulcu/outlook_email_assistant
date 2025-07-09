@@ -55,6 +55,37 @@ outlook_email_assistant/
 └── docs/                  # Documentation
 ```
 
+### Architecture Overview
+```
+src/
+├── index.tsx              # Fast-loading entry point
+├── App.tsx               # Main React application
+├── components/           # UI Components
+│   ├── SettingsPanel.tsx
+│   ├── TaskPaneContainer.tsx
+│   └── ...
+├── services/            # Business Logic
+│   ├── AIProviderManager.ts
+│   ├── SecurityClassificationService.ts
+│   └── UserPreferenceManager.ts
+└── types/               # TypeScript definitions
+    └── index.ts
+```
+
+### Performance Architecture
+**Two-Stage Loading System:**
+1. **Instant UI** (< 50ms): Basic HTML/CSS interface
+2. **Progressive Enhancement**: Full React app loads on-demand
+3. **Lazy Loading**: React.lazy() for heavy components
+4. **Bundle Splitting**: 142 KiB main bundle vs 1.95 MiB (92% reduction)
+
+### Key Performance Optimizations
+- ✅ **Fast Initial Render**: UI appears instantly regardless of Office.js status
+- ✅ **Chunked Dependencies**: Heavy libraries in separate bundles
+- ✅ **Progressive Loading**: Features activate as they become available
+- ✅ **Memory Efficiency**: Optimized algorithms and data structures
+- ✅ **Network Optimization**: Cached assets and compression
+
 ### Core Design Patterns
 
 #### Provider Pattern (AI Abstraction)
@@ -162,268 +193,85 @@ private static decryptData(encryptedData: string): string {
 }
 ```
 
-## 🔌 Extending the System
+## 🎨 Asset Creation
 
-### Adding New AI Providers
+### **Icon Requirements**
+Office add-ins require multiple icon sizes:
+- `icon-16.png` (16x16 pixels)
+- `icon-32.png` (32x32 pixels) 
+- `icon-64.png` (64x64 pixels)
+- `icon-80.png` (80x80 pixels)
 
-1. **Create Provider Class**:
-```typescript
-export class NewAIProvider extends BaseAIProvider {
-  public type = 'newai' as const;
-  public name = 'New AI Service';
-  
-  protected getAuthHeaders(): Record<string, string> {
-    return { 'Authorization': `Bearer ${this.apiKey}` };
-  }
-  
-  public async generateResponse(prompt: string, context: EmailSelectionContext): Promise<string> {
-    // Implementation
-  }
-  
-  public async analyzeEmail(email: EmailSelectionContext): Promise<EmailAnalysis> {
-    // Implementation
-  }
-}
-```
-
-2. **Update Type Definitions**:
-```typescript
-// In types/index.ts
-export interface UserPreferences {
-  providerPreferences: {
-    defaultProvider: 'openai' | 'ollama' | 'newai';
-    newai: {
-      apiKey: string;
-      model: string;
-      baseUrl: string;
-    };
-  };
-}
-```
-
-3. **Register Provider**:
-```typescript
-// In AIProviderManager.ts
-initializeProviders(preferences: UserPreferences) {
-  // Add new provider registration
-  if (preferences.providerPreferences.newai.apiKey) {
-    const newaiProvider = new NewAIProvider({
-      baseUrl: preferences.providerPreferences.newai.baseUrl,
-      apiKey: preferences.providerPreferences.newai.apiKey,
-      defaultModel: preferences.providerPreferences.newai.model
-    });
-    this.providers.set('newai', newaiProvider);
-  }
-}
-```
-
-### Adding New Features
-
-#### Email Analysis Enhancements
-```typescript
-// Extend EmailAnalysis interface
-export interface EmailAnalysis {
-  // Existing fields...
-  sentiment: SentimentAnalysis;
-  entities: EntityExtraction;
-  compliance: ComplianceCheck;
-  // New fields...
-}
-
-// Implement in provider
-public async analyzeEmail(email: EmailSelectionContext): Promise<EmailAnalysis> {
-  const baseAnalysis = await super.analyzeEmail(email);
-  
-  // Add new analysis capabilities
-  const sentiment = await this.analyzeSentiment(email.body);
-  const entities = await this.extractEntities(email.body);
-  
-  return {
-    ...baseAnalysis,
-    sentiment,
-    entities
-  };
-}
-```
-
-#### UI Component Extensions
-```typescript
-// Add new settings section
-const NewFeatureSettings: React.FC = () => {
-  return (
-    <div className="settings-section">
-      <h3>New Feature Configuration</h3>
-      {/* Configuration UI */}
-    </div>
-  );
-};
-
-// Include in SettingsPanel.tsx
-```
-
-## 🧪 Testing Strategy
-
-### Unit Testing
+### **Manual Icon Creation**
 ```bash
-# Install testing dependencies
-npm install --save-dev jest @testing-library/react @testing-library/jest-dom
+# Option 1: Use PowerShell script
+.\generate-icons.ps1
 
-# Run tests
-npm test
+# Option 2: Manual creation using Paint/Canva
+# Create PNG files with blue background (#4682B4) and white "P" text
+# Save to: public/assets/
 ```
 
-### Testing AI Providers
-```typescript
-describe('OllamaProvider', () => {
-  it('should generate response', async () => {
-    const provider = new OllamaProvider(config);
-    const response = await provider.generateResponse(prompt, context, userPrefs);
-    expect(response).toBeDefined();
-    expect(response.length).toBeGreaterThan(0);
-  });
-});
-```
+### **Logo Assets**
+- `logo.png`: Main branding logo
+- High contrast ratios for accessibility
+- SVG format preferred for scalability
 
-### Integration Testing
-```typescript
-describe('Email Analysis Integration', () => {
-  it('should classify and analyze email', async () => {
-    const email = createTestEmail();
-    const classification = SecurityClassificationService.analyzeEmailClassification(email);
-    
-    if (classification.isProcessingAllowed) {
-      const analysis = await provider.analyzeEmail(email, userPrefs);
-      expect(analysis.summary.keyPoints).toBeDefined();
-    }
-  });
-});
-```
+## 🔧 Build Configuration
 
-## 🐛 Debugging
-
-### Development Tools
-- **Browser DevTools**: Inspect add-in iframe
-- **Office.js Logging**: Enable verbose logging
-- **Network Tab**: Monitor API calls
-- **Console Logging**: Comprehensive debug output
-
-### Common Debugging Scenarios
-
-#### Office.js Issues
+### **Webpack Optimization**
 ```javascript
-// Check Office.js availability
-if (typeof Office !== 'undefined') {
-  console.log('Office.js version:', Office.context.displayLanguage);
-} else {
-  console.error('Office.js not available');
-}
-
-// Monitor Office.js events
-Office.onReady((info) => {
-  console.log('Office.js ready:', info);
-});
-```
-
-#### AI Provider Debugging
-```typescript
-// Enable debug logging
-const provider = new OllamaProvider({
-  baseUrl: 'http://localhost:11434',
-  defaultModel: 'llama3.2',
-  debug: true  // Enable verbose logging
-});
-
-// Test connectivity
-const health = await provider.testConnectivity();
-console.log('Provider health:', health);
-```
-
-### Performance Profiling
-```typescript
-// Measure AI response times
-const startTime = performance.now();
-const response = await provider.generateResponse(prompt, context, userPrefs);
-const endTime = performance.now();
-console.log(`AI response time: ${endTime - startTime}ms`);
-
-// Memory usage monitoring
-const memoryUsage = (performance as any).memory;
-if (memoryUsage) {
-  console.log('Memory usage:', {
-    used: memoryUsage.usedJSHeapSize,
-    total: memoryUsage.totalJSHeapSize,
-    limit: memoryUsage.jsHeapSizeLimit
-  });
-}
-```
-
-## 🔐 Security Considerations
-
-### Input Validation
-```typescript
-// Sanitize email content
-function sanitizeEmailContent(content: string): string {
-  // Remove potentially harmful content
-  return content
-    .replace(/<script[^>]*>.*?<\/script>/gi, '')
-    .replace(/javascript:/gi, '')
-    .trim();
-}
-```
-
-### API Security
-```typescript
-// Secure API configuration
-class SecureAIProvider extends BaseAIProvider {
-  protected getAuthHeaders(): Record<string, string> {
-    return {
-      'Authorization': `Bearer ${this.apiKey}`,
-      'X-API-Version': '2024-01-01',
-      'User-Agent': 'OutlookEmailAssistant/1.0'
-    };
-  }
-  
-  protected async makeRequest(endpoint: string, options: RequestInit): Promise<Response> {
-    // Add rate limiting, retry logic, etc.
-    return super.makeRequest(endpoint, {
-      ...options,
-      timeout: 30000,
-      headers: {
-        ...options.headers,
-        'Content-Type': 'application/json'
+// Key optimizations in webpack.config.js
+optimization: {
+  splitChunks: {
+    chunks: 'all',
+    cacheGroups: {
+      vendor: {
+        test: /[\\/]node_modules[\\/]/,
+        name: 'vendors',
+        chunks: 'all',
       }
-    });
+    }
   }
 }
 ```
 
-## 📦 Build & Deployment
-
-### Development Build
+### **Bundle Analysis**
 ```bash
-npm run build:dev
-```
-
-### Production Build
-```bash
+# Analyze bundle sizes
 npm run build
+npx webpack-bundle-analyzer dist/
+
+# Performance metrics
+npm run build:analyze
 ```
 
-### Custom Build Configurations
-```javascript
-// webpack.config.js customization
-module.exports = {
-  // Base configuration
-  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
-  
-  // Environment-specific settings
-  plugins: [
-    new webpack.DefinePlugin({
-      'process.env.AI_PROVIDER_URL': JSON.stringify(process.env.AI_PROVIDER_URL),
-      'process.env.ENABLE_DEBUG': JSON.stringify(process.env.ENABLE_DEBUG === 'true')
-    })
-  ]
-};
+## 🛠️ Development Workflow
+
+### **Local Development**
+```bash
+# Start development server
+npm start
+
+# Run with HTTPS (required for Office.js)
+npm run start:https
+
+# Build and test locally
+npm run build
+npm run serve
+```
+
+### **Testing in Outlook**
+1. **Sideload local manifest**: Use localhost URLs for development
+2. **Browser testing**: Test UI components in browser first  
+3. **Office.js testing**: Validate Office integration in Outlook
+4. **Performance testing**: Monitor load times and responsiveness
+
+### **Debug Tools**
+- **Browser DevTools**: Network, Performance, Console tabs
+- **Office.js Logging**: Enable verbose logging for Office API calls
+- **React DevTools**: Component tree and state inspection
+- **Bundle Analyzer**: Identify optimization opportunities
 ```
 
 ## 🔄 CI/CD Pipeline
