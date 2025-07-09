@@ -1,0 +1,42 @@
+=== FILES TO KEEP IN PUBLIC FOLDER ===
+Required by manifest.xml:
+- index.html (main taskpane)
+- commands.html (required for ribbon buttons)
+- assets/ folder (icons)
+- manifest.xml (add-in definition)
+
+=== FILES TO REMOVE (debugging/test files) ===
+cert-test.html
+certificate-test.html
+diagnostic-simple.html
+emergency-test.html
+emergency.html
+fast-test.html
+index-production.html
+index-progressive.html
+minimal.html
+office-diagnostic.html
+outlook-debug.html
+outlook-enhanced.html
+outlook-fallback.html
+outlook-fixed.html
+ultra-fast.html
+
+=== COMPILED JS FILES TO REMOVE (should be in dist/) ===
+591.7dd921b81a89728088d6.js
+fluentui.b559b4df8438fc04ea3c.js
+main.6f6a904b3184f1585ac4.js
+react.6e6489772baa2b0abf98.js
+vendors.fc12bfae70acfc80a4ba.js
+=== FINAL PUBLIC FOLDER STATE ===
+Files remaining:
+assets
+commands.html
+index.html
+manifest.xml
+assets\icon-16.png
+assets\icon-32.png
+assets\icon-64.png
+assets\icon-80.png
+assets\logo.png
+assets\README.md
